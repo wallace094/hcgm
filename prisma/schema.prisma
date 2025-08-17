@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  ID          Int           @id @default(autoincrement())
+  CODE        String        @default("")
+  NAME        String        @default("")
+  EMAIL       String        @unique
+  PHONE       String        @default("")
+  ROLE        String        @default("")
+  PASSWORD    String        @default("")
+  CREATED_AT  DateTime      @default(now()) @db.Timestamptz(6)
+  REGION      REGION        @default(ALL)
+  Transaction Transaction[]
+}
+
+model Customer {
+  ID                    Int           @id @default(autoincrement())
+  CODE                  String        @default("")
+  NAME                  String        @default("")
+  SSM_REGISTRATION_NO   String?       @default("")
+  TAX_IDENTIFICATION_NO String?       @default("")
+  SST_NO                String?       @default("")
+  MSIC_CODE             String?       @default("")
+  BUSINESS_NATURE       String?       @default("")
+  PIC_NAME              String?       @default("")
+  EMAIL                 String?       @unique
+  PHONE_NO              String?       @default("")
+  ADDRESS               String?       @default("")
+  CREDIT_TERM           String        @default("")
+  ADMIN_ID              Int
+  CREDIT_LIMIT          Float         @default(0)
+  CREATED_AT            DateTime      @default(now()) @db.Timestamptz(6)
+  Transaction           Transaction[]
+}
+
+model Product {
+  CODE              String              @id @unique @default("")
+  NAME              String              @default("")
+  CATEGORY          String              @default("")
+  BASE_UOM          String              @default("")
+  STOCK             Float               @default(0)
+  UNIT_PRICE        Float               @default(0)
+  TransactionDetail TransactionDetail[]
+}
+
+model Transaction {
+  ID               Int       @id @default(autoincrement())
+  DOC_NUM          String    @default("")
+  TRANSACTION_DATE DateTime  @default(now()) @db.Timestamptz(6)
+  CUSTOMER_ID      Int
+  ADMIN_ID         Int
+  TOTAL_PRICE      Float     @default(0)
+  REF_DOC_NO       String?   @default("")
+  DELIVERY_DATE    DateTime?
+  SHIPPING_METHOD  String?   @default("")
+  COMISSION        Float?    @default(0)
+  STATUS           String    @default("")
+  LOCATION         String
+
+  ADMIN             Admin               @relation(fields: [ADMIN_ID], references: [ID])
+  CUSTOMER          Customer            @relation(fields: [CUSTOMER_ID], references: [ID])
+  TransactionDetail TransactionDetail[]
+  remarks           Remark[] 
+}
+
+model TransactionDetail {
+  ID             Int         @id @default(autoincrement())
+  TRANSACTION_ID Int
+  PRODUCT_CODE   String
+  QTY            Int
+  UNIT_PRICE     Float
+  PRODUCT        Product     @relation(fields: [PRODUCT_CODE], references: [CODE])
+  TRANSACTION    Transaction @relation(fields: [TRANSACTION_ID], references: [ID])
+}
+
+model Remark {
+  id            Int         @id @default(autoincrement())
+  message       String
+  createdAt     DateTime    @default(now())
+  transaction   Transaction @relation(fields: [transactionId], references: [ID])
+  transactionId Int
+}
+
+model regional_forecast_costing {
+  id         Int    @id @default(autoincrement())
+  item_group String
+  central    Int
+  e_coast    Int
+  south      Int
+  north      Int
+}
+
+model regional_forecast_mt {
+  id         Int    @id @default(autoincrement())
+  item_group String
+  central    Int
+  e_coast    Int
+  south      Int
+  north      Int
+}
+
+enum REGION {
+  ALL
+  SOUTH
+  EAST_COAST
+  NORTH
+  CENTRAL
+}
+
+enum ROLE {
+  MASTER_ADMIN
+  MANAGER
+  SALESPERSON
+}
