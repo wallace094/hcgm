@@ -1,4 +1,4 @@
-# hcgm
+# Huachang Growmax Sales Order Application
 
 **Huachang Growmax Sales Order Application** is a modern, full-stack web application template built with the **T3 Stack**.  
 It provides a solid foundation for building scalable, type-safe, and production-ready web applications.
@@ -22,3 +22,4 @@ Clone the repository and install dependencies:
 git clone https://github.com/wallace094/hcgm.git
 cd hcgm
 npm install
+
